@@ -16,23 +16,40 @@
     <link rel="stylesheet" href="css/idea.css">
     <script src="js/highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="js/toc-resize.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="css/api-specification.css"> 
-
+    <link rel="stylesheet" type="text/css" href="css/api-specification.css">
     
 </head>
 <body id="respecDocument" class="h-entry">
 <div class="container">
+
+
   <div id="TOC-container">
     
-<section id="toc">
+<div id="fiware-logo-container">
+    <div id="fiware-logo"></div>
+</div>
+<nav id="toc">
 
-        <div id="fiware-logo"></div>
+        
     <ul class="toc">
 
+        
+	        
+        
+	        
+        
+
+
+<li><a href="#api-summary">API Summary</a></li>
+
 
     
     
+
+
 
 
 
@@ -124,24 +141,21 @@
                               
                             </ul>
                         </li>
-                      
-    <li><a href="#examples">Examples</a></li>
-    </ul>
+                      </ul>
 </li>
     
     
     
    </ul>
-</section>
+</nav>
 
   </div>
+  
+
+
   <div id="API-content">
   
-	
-
-	
-
-
+    
 
 	
 
@@ -149,32 +163,39 @@
 
 
 
+	<h1>Stream-oriented GE Open API </h1>
+
+
 
 	
 
 	
-		
-		<dl>
-		
-			
-		
-			
-		
-
-		
-			
-		
-			
-		
-
-		<!--
-		<dt class="versionLabel">Latest version:</dt> 
-		<dd class="versionValue"> <a href="http://kurento.lab.fiware.org:8888latest">http://kurento.lab.fiware.org:8888latest</a> </dd>
-		-->
 
 
-		</dl>
+
+
+
 	
+	
+	
+
+	
+	
+	
+
+
+
+
+
+
+
+  
+  
+
+  
+  
+
+
 
 
 
@@ -186,6 +207,7 @@
 
 	<h2 id="abstract">Abstract</h2>
 	<p>The Stream Oriented API is a resource-oriented API accessed via WebSockets that uses JSON-RPC V2.0 based representations for information exchange. An RPC call is represented by sending a Request message to a server. The Request message has the following members:</p>
+
 <ul>
 <li>
 <p><code>jsonrpc</code>: a string specifying the version of the JSON-RPC protocol. It must be exactly <code>2.0</code>.</p>
@@ -200,7 +222,9 @@
 <p><code>params</code>: a structured value that holds the parameter values to be used during the invocation of the method.</p>
 </li>
 </ul>
+
 <p>When an RPC call is made by a client, the server replies with a response object. In the case of a success, the response object contains the following members:</p>
+
 <ul>
 <li>
 <p><code>jsonrpc</code>: it must be exactly <code>2.0</code>.</p>
@@ -212,7 +236,9 @@
 <p><code>result</code>: structured value which contains the invocation result.</p>
 </li>
 </ul>
+
 <p>In the case of an error, the response object contains the following members:</p>
+
 <ul>
 <li>
 <p><code>jsonrpc</code>: it must be exactly <code>2.0</code>.</p>
@@ -234,6 +260,116 @@
 
 
 <hr>
+  
+
+
+    
+    
+<nav class="api-summary">
+<h1 id="api-summary"> API Summary </h1>
+    <ul>
+
+
+    
+
+        <li>
+            
+                <a href="#resource_group_websocket-connection" title = "WebSocket Connection">WebSocket Connection</a>
+            
+            <ul>
+              
+                
+                    <li>
+                        <a href="#resource_websocket-handshake" title = "Resource WebSocket Handshake">
+                        
+                            WebSocket Handshake
+                        
+                        </a>
+                        <ul class="toc  ">
+                        
+                            
+                                <li>
+                                    <a href="#action_handshake" title ="GET - Handshake"><span class="actionMethod">GET</span> - Handshake
+                                    
+                                        
+                                            [/kurento]
+                                        
+                                    
+                                    </a>
+                                </li>
+                            
+
+                        
+                        </ul>
+                    </li>
+                
+              
+            </ul>
+        </li>
+      
+
+        <li>
+            
+                <a href="#resource_group_create" title = "Create">Create</a>
+            
+            <ul>
+              
+            </ul>
+        </li>
+      
+
+        <li>
+            
+                <a href="#resource_group_invoke" title = "Invoke">Invoke</a>
+            
+            <ul>
+              
+            </ul>
+        </li>
+      
+
+        <li>
+            
+                <a href="#resource_group_release" title = "Release">Release</a>
+            
+            <ul>
+              
+            </ul>
+        </li>
+      
+
+        <li>
+            
+                <a href="#resource_group_subscribe" title = "Subscribe">Subscribe</a>
+            
+            <ul>
+              
+            </ul>
+        </li>
+      
+
+        <li>
+            
+                <a href="#resource_group_unsubscribe" title = "Unsubscribe">Unsubscribe</a>
+            
+            <ul>
+              
+            </ul>
+        </li>
+      
+
+        <li>
+            
+                <a href="#resource_group_onevent" title = "OnEvent">OnEvent</a>
+            
+            <ul>
+              
+            </ul>
+        </li>
+      
+
+    </ul>
+</nav>
 
     
     
@@ -270,7 +406,12 @@
 	<p>To establish a WebSocket connection, the client sends a WebSocket handshake request, for which the media server returns a WebSocket handshake response.</p>
         
             <section id="resource_websocket-handshake" class="resource">
-                 <div class= "header" ><h3 id="h-resource_websocket-handshake">WebSocket Handshake [/kurento]</h3> </div>
+                 <div class= "header" >
+                 
+                    <h3 id="h-resource_websocket-handshake">WebSocket Handshake</h3>
+                    <span class="extra-header">[/kurento]</span>
+                 
+                 </div>
                 
                 
                 
@@ -294,13 +435,18 @@
                         <div id="action_handshake" class="action GET">
 
                         
-    <h4 id="h-action_handshake">
-        Handshake -
-        GET
+    <div class="header">
         
-            /kurento
+            <h4 id="h-action_handshake">Handshake </h4>
+            <span class="extra-header">
+		GET 
+                
+                    /kurento
+                
+            </span>
         
-    </h4>
+
+    </div>
 
         
                             <div id="handshake_body" class="">
@@ -311,17 +457,23 @@
 			
                                 
                                 
+
+
+
       
+
+                                
+
                                     
-        	                            
+                                        
+                                        
+                                        
                                             
-                                            
-                                            
-                                            
+
 
 <div class="rest-packet-div">
 
-            <span class="packetType">Request </span> 
+    <span class="packetType">Request  /kurento</span> 
         
     
         
@@ -330,33 +482,33 @@
     
         
     
-            
-            
-     
+    
+    
+    
+
+
+    
 </div>
-        	                            
-    
-        	                            
-        		                            
-                                        
-                                        
-                                        
+
+                                            
+                                                
+                                                
+                                                
+
 
 <div class="rest-packet-div">
 
-            <span class="packetType">Response 101</span> 
-            
-            
-     
+    <span class="packetType">Response 101</span> 
+    
+    
+    
+
+
+    
 </div>
-        	                            
+                                
+                                <div>
                                     
-                                    
-                                    <div class="goExample">
-                                        <a href="#action_handshake_examples">Go to example</a>
-                                    </div>
-                                    
-                                        
     <div class="goApiary">
     
         
@@ -365,7 +517,8 @@
     
     </div>
 
-                                    
+                                
+                                </div>
                                 
                             </div>
                         </div>
@@ -796,199 +949,8 @@
         
     </section>
 
-<section id="examples">
-    <div class= "header" ><h2>Examples</h2> </div>
-    
-        
-            <section id="resource_group_websocket-connection_example" class="resourceGroupExample">
-                <div class= "header" ><h3 id="h-resource_group_websocket-connection_example">WebSocket Connection</h3> </div>
-        
-
-                
-                    <section id="resource_websocket-handshake_example" class="resourceExample">
-                         <div class= "header" ><h4 id="h-resource_websocket-handshake_example">WebSocket Handshake [/kurento]</h4></div>
-                            
-                            
-                            
-
-                            
-                            
-                            
-
-                            
 
 
-                            
-                                <div id="action_handshake_examples" class="actionExample GET">
-
-                                    
-    <h4 id="h-action_handshake_examples">
-        Handshake -
-        GET
-        
-            /kurento
-        
-    </h4>
-
-                
-                                    <div id="action_handshake_body" class=""> 
-                                        
-                                        
-                                        
-                                        
-         
-                                        
-                                            
-                                            
-                                                
-                                                    
-                                                    
-                                                    
-                                                    
-
-<div class="rest-packet-div">
-
-            <span class="packetType">Request </span> 
-        
-    
-        
-    
-        
-    
-        
-    
-            
-            
-            
-            
-
-
-
- 
-            <div id="action_handshake_Request_1_body" class=" action-div-body">
-                <p></p>
-
-                
-        	         <div class= "header"><p>Headers</p></div>
-                    
-                    
-                        
-                    
-                        
-                    
-                        
-                    
-                        
-                    
-
-        	        <pre><code>Upgrade: websocket
-Connection: Upgrade
-Sec-WebSocket-Key: daecIhfhHeDfYP4rJivWjQ==
-Sec-WebSocket-Version: 13</code></pre>
-                
-
-                
-
-                
-            </div>
-            
-            
-     
-</div>
-                                                
-            
-                                                
-                                                    
-                                                
-                                                
-                                                
-
-<div class="rest-packet-div">
-
-            <span class="packetType">Response 101</span> 
-            
-            
-            
-            
-
-
-
- 
-            <div id="action_handshake_Response_1_body" class=" action-div-body">
-                <p></p>
-
-                
-
-                
-
-                
-            </div>
-            
-            
-     
-</div>
-                                                
-                                            
-                                            <div class="goActions">
-                                                <a href="#action_handshake">Go to specification</a>
-                                            </div>
-                                    </div>
-                                </div>
-                            
-                    </section>
-        <!--
-        </section>
-    
-        
-            <section id="resource_group_create_example" class="resourceGroupExample">
-                <div class= "header" ><h3 id="h-resource_group_create_example">Create</h3> </div>
-        
-
-                
-        </section>
-    
-        
-            <section id="resource_group_invoke_example" class="resourceGroupExample">
-                <div class= "header" ><h3 id="h-resource_group_invoke_example">Invoke</h3> </div>
-        
-
-                
-        </section>
-    
-        
-            <section id="resource_group_release_example" class="resourceGroupExample">
-                <div class= "header" ><h3 id="h-resource_group_release_example">Release</h3> </div>
-        
-
-                
-        </section>
-    
-        
-            <section id="resource_group_subscribe_example" class="resourceGroupExample">
-                <div class= "header" ><h3 id="h-resource_group_subscribe_example">Subscribe</h3> </div>
-        
-
-                
-        </section>
-    
-        
-            <section id="resource_group_unsubscribe_example" class="resourceGroupExample">
-                <div class= "header" ><h3 id="h-resource_group_unsubscribe_example">Unsubscribe</h3> </div>
-        
-
-                
-        </section>
-    
-        
-            <section id="resource_group_onevent_example" class="resourceGroupExample">
-                <div class= "header" ><h3 id="h-resource_group_onevent_example">OnEvent</h3> </div>
-        
-
-                
-        </section>
-        -->
-
-</section>
   </section>
   
    
@@ -1001,4 +963,5 @@ Sec-WebSocket-Version: 13</code></pre>
   </div>
 </div>
 </body>
+
 </html>
