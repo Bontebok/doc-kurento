@@ -41,6 +41,16 @@
         
 	        
         
+	        
+		        <li><a href="#API-content">Stream-oriented GE Open API</a></li>
+	        
+        
+	        
+        
+	        
+        
+	        
+        
 
 
 <li><a href="#api-summary">API Summary</a></li>
@@ -58,6 +68,16 @@
 <li><a href="#API_specification">API Specification</a>
     <ul class="toc">
     
+
+                        <li>
+                            
+                                <a href="#resource_group_json-rpc-messages-format" title = "Group JSON-RPC Messages format">Group JSON-RPC Messages format</a>
+                            
+                            <ul class="toc">
+                              
+                            </ul>
+                        </li>
+                      
 
                         <li>
                             
@@ -146,6 +166,14 @@
     
     
     
+    
+    
+    
+    
+    
+    
+        <li><a href="#references">References</a></li>
+    
    </ul>
 </nav>
 
@@ -161,6 +189,16 @@
 
 	
 
+	
+		
+	
+
+	
+
+	
+
+	
+
 
 
 	<h1>Stream-oriented GE Open API </h1>
@@ -171,11 +209,39 @@
 
 	
 
+	
+
+	
+		<span class="dateLabel">DATE:</span> <span class="dateValue"> 15 December 2015 </span>
+	
+
+	
+
+	
+
 
 
 
 
 	
+	
+	
+
+	
+	
+	
+
+	
+	
+	
+
+	
+	
+	
+
+	
+	
+		
 	
 	
 
@@ -195,69 +261,74 @@
   
   
 
+  
+  
+
+  
+  
+
+  
+  
+
+  
+    
+  
+  
 
 
 
+  <div id="top-source-buttons">
+  	
+    	<a target="_blank" href="http://docs.streamoriented.apiary.io/#reference">View in Apiary</a>
+    
+    
+  </div>
 
 
+
+	
+		<h2 id="editors">Editors</h2>
+		<ul>
+<li>Boni García, Universidad Rey Juan Carlos.</li>
+</ul>
+	
+
+	
+
+	
+
+
+
+	
+
+	
+		<h2 id="copyright">Copyright</h2>
+		<p>This specification is licensed under the
+<a href="http://forge.fiware.org/plugins/mediawiki/wiki/fiware/index.php/FI-WARE_Open_Specification_Legal_Notice_(implicit_patents_license)">FIWARE Open Specification License (implicit patents license)</a>.</p>
+	
+
+	
 
 
 <hr>
 
 
 	<h2 id="abstract">Abstract</h2>
-	<p>The Stream Oriented API is a resource-oriented API accessed via WebSockets that uses JSON-RPC V2.0 based representations for information exchange. An RPC call is represented by sending a Request message to a server. The Request message has the following members:</p>
+	<p>The Stream Oriented Generic Enabler (GE) provides a framework devoted to simplify the development of complex interactive multimedia applications through a rich family of APIs and toolboxes. It provides a media server and a set of client APIs making simple the development of advanced video applications for WWW and smartphone platforms. The Stream Oriented GE features include group communications, transcoding, recording, mixing, broadcasting and routing of audiovisual flows. It also provides advanced media processing capabilities involving computer vision, video indexing, augmented reality and speech analysis.</p>
 
-<ul>
-<li>
-<p><code>jsonrpc</code>: a string specifying the version of the JSON-RPC protocol. It must be exactly <code>2.0</code>.</p>
-</li>
-<li>
-<p><code>id</code>: an unique identifier established by the client that contains a string or number. The server must reply with the same value in the Response message. This member is used to correlate the context between both messages.</p>
-</li>
-<li>
-<p><code>method</code>: a string containing the name of the method to be invoked.</p>
-</li>
-<li>
-<p><code>params</code>: a structured value that holds the parameter values to be used during the invocation of the method.</p>
-</li>
-</ul>
-
-<p>When an RPC call is made by a client, the server replies with a response object. In the case of a success, the response object contains the following members:</p>
-
-<ul>
-<li>
-<p><code>jsonrpc</code>: it must be exactly <code>2.0</code>.</p>
-</li>
-<li>
-<p><code>id</code>: it must match the value of the id member in the request object.</p>
-</li>
-<li>
-<p><code>result</code>: structured value which contains the invocation result.</p>
-</li>
-</ul>
-
-<p>In the case of an error, the response object contains the following members:</p>
-
-<ul>
-<li>
-<p><code>jsonrpc</code>: it must be exactly <code>2.0</code>.</p>
-</li>
-<li>
-<p><code>id</code>: it must match the value of the id member in the request object.</p>
-</li>
-<li>
-<p><code>error</code>: object describing the error through the following members:.</p>
-<ul>
-<li><code>code</code>: integer number that indicates the error type that occurred</li>
-<li><code>message</code>: string providing a short description of the error.</li>
-<li><code>data</code>: primitive or structured value that contains additional information about the error. It may be omitted. The value of this member is defined by the server.</li>
-</ul>
-</li>
-</ul>
+<p>The Stream Oriented GE’s core element is a Media Server, responsible for media transmission, processing, loading and recording. This Media Server exposes a full fledged Open API to let application clients to process media in several ways. These clients require requires full-duplex communications between the server infrastructure. For this reason, the Stream Oriented GE Open API is resource-oriented and it is accessed via WebSockets that uses JSON-RPC V2.0 for information exchange. </p>
 
 
 
+
+	
+
+	
+
+	
+		<h2 id="status">Status of this document</h2>
+		<p>Final version aligned with FIWARE Release 4.</p>
+	
 
 <hr>
   
@@ -271,6 +342,16 @@
 
 
     
+
+        <li>
+            
+                <a href="#resource_group_json-rpc-messages-format" title = "JSON-RPC Messages format">JSON-RPC Messages format</a>
+            
+            <ul>
+              
+            </ul>
+        </li>
+      
 
         <li>
             
@@ -380,11 +461,23 @@
 		
 	
 	
+		
+	
+		
+	
+		
+	
 
 
 
 
 
+	
+		
+	
+		
+	
+		
 	
 
 
@@ -398,6 +491,57 @@
 
 
 
+
+        
+            <section id="resource_group_json-rpc-messages-format" class="resourceGroup">
+            <h2 id="h-resource_group_json-rpc-messages-format">JSON-RPC Messages format</h2>
+        
+	<p>An JSON-RPC call is represented by sending a request message to a server. The request messages has the following members:</p>
+<ul>
+<li>
+<p><code>jsonrpc</code>: a string specifying the version of the JSON-RPC protocol. It must be exactly <code>2.0</code>.</p>
+</li>
+<li>
+<p><code>id</code>: an unique identifier established by the client that contains a string or number. The server must reply with the same value in the response message. This member is used to correlate the context between both messages.</p>
+</li>
+<li>
+<p><code>method</code>: a string containing the name of the method to be invoked.</p>
+</li>
+<li>
+<p><code>params</code>: a structured value that holds the parameter values to be used during the invocation of the method.</p>
+</li>
+</ul>
+<p>When an RPC call is made by a client, the server replies with a response object. In the case of a success, the response object contains the following members:</p>
+<ul>
+<li>
+<p><code>jsonrpc</code>: it must be exactly <code>2.0</code>.</p>
+</li>
+<li>
+<p><code>id</code>: it must match the value of the id member in the request object.</p>
+</li>
+<li>
+<p><code>result</code>: structured value which contains the invocation result.</p>
+</li>
+</ul>
+<p>In the case of an error, the response object contains the following members:</p>
+<ul>
+<li>
+<p><code>jsonrpc</code>: it must be exactly <code>2.0</code>.</p>
+</li>
+<li>
+<p><code>id</code>: it must match the value of the id member in the request object.</p>
+</li>
+<li>
+<p><code>error</code>: object describing the error through the following members:</p>
+<ul>
+<li><code>code</code>: integer number that indicates the error type that occurred</li>
+<li><code>message</code>: string providing a short description of the error.</li>
+<li><code>data</code>: primitive or structured value that contains additional information about the error. It may be omitted. The value of this member is defined by the server.</li>
+</ul>
+</li>
+</ul>
+        
+    </section>
 
         
             <section id="resource_group_websocket-connection" class="resourceGroup">
@@ -513,6 +657,26 @@
     
         
     
+        
+    
+        
+    
+        
+    
+        
+    
+        
+            
+                
+            
+            
+
+            
+                
+            
+            
+                <a target="_blank" href="http://docs.streamoriented.apiary.io/#reference/websocket-connection/websocket-handshake/handshake">View in Apiary</a>
+            
         
     
     </div>
@@ -957,8 +1121,23 @@
 
 
 
+	
+
+	
+
+	
+
     
     
+    
+      <section id="references">
+      <h1>References</h1>
+          <ul>
+              
+                  <li><a href="http://forge.fiware.org/plugins/mediawiki/wiki/fiware/index.php/FI-WARE_Open_Specification_Legal_Notice_(implicit_patents_license)">FIWARE Open Specification License (implicit patents license)</a></li>
+              
+          </ul>
+      </section>
     
   </div>
 </div>
