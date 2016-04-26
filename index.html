@@ -763,7 +763,7 @@
             <h2 id="h-resource_group_create">Create</h2>
         
 	<p>Create message requests the creation of an Media Pipelines and Media Elements in the Media Server. The parameter type specifies the type of the object to be created. The parameter <code>params</code> contains all the information needed to create the object. Each message needs different parameters to create the object.</p>
-<p>A <code>sessionId</code> parameter is included with the identifier of the current session. The value of this parameter is sent by Kurento Media Server to the client in each response. Only the first requests from client to server are allowed to not include the <code>sessionId</code> (because at this point is unknown for the client).</p>
+<p>Media Elements have to be contained in a previously created Media Pipeline. Therefore, before creating Media Elements, a Media Pipeline must exist. The response of the creation of a Media Pipeline contains a parameter called <code>sessionId</code>, which must be included in the next create requests for Media Elements.</p>
 <h3>Request</h3>
 <p>A <code>create</code> request contains the following parameters:</p>
 <ul>
@@ -813,7 +813,7 @@
 </code></pre>
 </li>
 </ul>
-<p>The following example shows a request message requesting the creation of an object of the type <code>WebRtcEndpoint</code> within an existing Media Pipeline:</p>
+<p>The following example shows a request message requesting the creation of an object of the type <code>WebRtcEndpoint</code> within an existing Media Pipeline (identified by the parameter <code>mediaPipeline</code>). Notice that in this request, the <code>sessionId</code> is already present, while in the previous example it was not (since at that point was unknown for the client):</p>
 <ul>
 <li>Body (application/json)<pre><code>{
     "id": 3,
@@ -832,8 +832,7 @@
 </li>
 </ul>
 <h3>Response</h3>
-<p>The response message contains the identifier of the new object in the field value. This message <code>id</code> has to be used in other requests (as described later). As stated before, the <code>sessionId</code> is also returned in each response.</p>
-<p>A <code>create</code> response contains the following parameters:</p>
+<p>The response message contains the identifier of the new object in the field value. As usual, the message <code>id</code> must match with the request message. The <code>sessionId</code> is also returned in each response. A <code>create</code> response contains the following parameters:</p>
 <ul>
 <li><code>result</code> (required, object). Result of the create invocation:<ul>
 <li><code>value</code> (required, number). Identifier of the created media element.</li>
@@ -841,11 +840,9 @@
 </ul>
 </li>
 </ul>
-<p>The following examples shows the responses to the previous request messages (respectively, the response to the <code>MediaPipeline</code> create message, and then the response to the to <code>WebRtcEndpoint</code> create message):</p>
+<p>The following examples shows the responses to the previous request messages (respectively, the response to the <code>MediaPipeline</code> create message, and then the response to the to <code>WebRtcEndpoint</code> create message).  In the first example, the parameter <code>value</code> identifies the created Media Pipelines, and <code>sessionId</code> is the identifier of the current session:</p>
 <ul>
-<li>
-<p>Body (application/json)</p>
-<pre><code>{
+<li>Body (application/json)<pre><code>{
     "id": 2,
     "result": {
         "value": "6ba9067f-cdcf-4ea6-a6ee-d74519585acd_kurento.MediaPipeline",
@@ -855,9 +852,10 @@
 }
 </code></pre>
 </li>
-<li>
-<p>Body (application/json)</p>
-<pre><code>{
+</ul>
+<p>In the second response example, the parameter <code>value</code> identifies the created Media Element (a <code>WebRtcEndpoint</code> in this case). Notice that this value also identifies the Media Pipeline in which the Media Element is contained. The parameter <code>sessionId</code> is also contained in the response.</p>
+<ul>
+<li>Body (application/json)<pre><code>{
     "id": 3,
     "result": {
         "value": "6ba9067f-cdcf-4ea6-a6ee-d74519585acd_kurento.MediaPipeline/087b7777-aab5-4787-816f-f0de19e5b1d9_kurento.WebRtcEndpoint",
