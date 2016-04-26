@@ -105,6 +105,16 @@
 
                         <li>
                             
+                                <a href="#resource_group_ping" title = "Group Ping">Group Ping</a>
+                            
+                            <ul class="toc">
+                              
+                            </ul>
+                        </li>
+                      
+
+                        <li>
+                            
                                 <a href="#resource_group_create" title = "Group Create">Group Create</a>
                             
                             <ul class="toc">
@@ -289,7 +299,7 @@
 	
 		<h2 id="editors">Editors</h2>
 		<ul>
-<li>Boni García, Universidad Rey Juan Carlos.</li>
+<li>Universidad Rey Juan Carlos.</li>
 </ul>
 	
 
@@ -303,8 +313,7 @@
 
 	
 		<h2 id="copyright">Copyright</h2>
-		<p>This specification is licensed under the
-<a href="http://forge.fiware.org/plugins/mediawiki/wiki/fiware/index.php/FI-WARE_Open_Specification_Legal_Notice_(implicit_patents_license)">FIWARE Open Specification License (implicit patents license)</a>.</p>
+		<p>This specification is licensed under the <a href="http://forge.fiware.org/plugins/mediawiki/wiki/fiware/index.php/FI-WARE_Open_Specification_Legal_Notice_(implicit_patents_license)">FIWARE Open Specification License (implicit patents license)</a>.</p>
 	
 
 	
@@ -384,6 +393,16 @@
                         </ul>
                     </li>
                 
+              
+            </ul>
+        </li>
+      
+
+        <li>
+            
+                <a href="#resource_group_ping" title = "Ping">Ping</a>
+            
+            <ul>
               
             </ul>
         </li>
@@ -511,6 +530,7 @@
 <p><code>params</code>: a structured value that holds the parameter values to be used during the invocation of the method.</p>
 </li>
 </ul>
+<p>Therefore, the value of the <code>method</code> parameter in the request determines the type of request/response to be exchanged between client and server. The following section describes each pair of messages depending of the type of <code>method</code> (namely: <code>Ping</code>, <code>Create</code>, <code>Invoke</code>, <code>Release</code>, <code>Subscribe</code>, <code>Unsubscribe</code>, and <code>OnEvent</code>).</p>
 <p>When an RPC call is made by a client, the server replies with a response object. In the case of a success, the response object contains the following members:</p>
 <ul>
 <li>
@@ -692,11 +712,58 @@
     </section>
 
         
+            <section id="resource_group_ping" class="resourceGroup">
+            <h2 id="h-resource_group_ping">Ping</h2>
+        
+	<p>In order to warranty the WebSocket connectivity between the client and the Kurento Media Server, a keep-alive method is implemented. This method is based on a <code>ping</code> method sent by the client, which must be replied with a <code>pong</code> message from the server. If no response is obtained in a time interval, the client is aware that the connectivity with the media server has been lost.</p>
+<h3>Request</h3>
+<p>A <code>ping</code> request contains the following parameters:</p>
+<ul>
+<li>
+<p><code>method</code> (required, string). Value: <code>ping</code>.</p>
+</li>
+<li>
+<p><code>params</code> (required, object). Parameters for the invocation of the ping message, containing these member:</p>
+<ul>
+<li>interval (required, number). Time out to receive the <code>pong</code> message from the server, in milliseconds. By default this value is <code>240000</code> (i.e. 40 seconds).</li>
+</ul>
+</li>
+</ul>
+<p>This is an example of <code>ping</code>:</p>
+<ul>
+<li>Body (application/json)<pre><code>{
+    "id": 1,
+    "method": "ping",
+    "params": {
+        "interval": 240000
+    },
+    "jsonrpc": "2.0"
+}
+</code></pre>
+</li>
+</ul>
+<h3>Response</h3>
+<p>The response to a <code>ping</code> request must contain a <code>result</code> object with a <code>value</code> parameter with a fixed name: <code>pong</code>. The following snippet shows the <code>pong</code> response to the previous <code>ping</code> request:</p>
+<ul>
+<li>Body (application/json)<pre><code>{
+    "id": 1,
+    "result": {
+        "value": "pong"
+    },
+    "jsonrpc": "2.0"
+}
+</code></pre>
+</li>
+</ul>
+        
+    </section>
+
+        
             <section id="resource_group_create" class="resourceGroup">
             <h2 id="h-resource_group_create">Create</h2>
         
-	<p>Create message requests the creation of an element of the toolbox. The parameter type specifies the type of the object to be created. The parameter <code>constructorParams</code> contains all the information needed to create the object. Each message needs different constructorParams to create the object.</p>
-<p>A <code>sessionId</code> parameter is included with the identifier of the current session. The value of this parameter is sent by Kurento Media Server to the client in each response. Only the first request from client to server is allowed to not include the <code>sessionId</code> (because at this point is unknown for the client).</p>
+	<p>Create message requests the creation of an Media Pipelines and Media Elements in the Media Server. The parameter type specifies the type of the object to be created. The parameter <code>params</code> contains all the information needed to create the object. Each message needs different parameters to create the object.</p>
+<p>A <code>sessionId</code> parameter is included with the identifier of the current session. The value of this parameter is sent by Kurento Media Server to the client in each response. Only the first requests from client to server are allowed to not include the <code>sessionId</code> (because at this point is unknown for the client).</p>
 <h3>Request</h3>
 <p>A <code>create</code> request contains the following parameters:</p>
 <ul>
@@ -706,7 +773,8 @@
 <li>
 <p><code>params</code> (required, object). Parameters for the invocation of the create message, containing these members:</p>
 <ul>
-<li>type (required, string). Media element to be created. Allowed Values:<ul>
+<li>type (required, string). Media pipeline or media element to be created. The allowed values are the following:<ul>
+<li><code>MediaPipeline</code>: Media Pipeline to be created.</li>
 <li><code>WebRtcEndpoint</code>: This Endpoint offers media streaming using WebRTC.</li>
 <li><code>RtpEndpoint</code>: Endpoint that provides bidirectional content delivery capabilities with remote networked peers through RTP protocol. It contains paired sink and source MediaPad for audio and video.</li>
 <li><code>HttpPostEndpoint</code>: This type of Endpoint provide unidirectional communications. Its MediaSource are related to HTTP POST method. It contains sink MediaPad for audio and video, which provide access to an HTTP file upload function.</li>
@@ -720,31 +788,51 @@
 <li><code>DispatcherOneToMany</code>: A Hub that sends a given source to all the connected sinks.</li>
 </ul>
 </li>
-<li><code>constructorParams</code> (required, object). Additional parameters. As minimum, the identifier of the media pipeline should be included here.</li>
-<li><code>sessionId</code> (required, string). Session identifier.</li>
+<li><code>constructorParams</code> (required, object). Additional parameters. For example:<ul>
+<li><code>mediaPipeline</code> (optional, string): This parameter is only mandatory for Media Elements. In that case, the value of this parameter is the identifier of the media pipeline which is going to contain the Media Element to be created.</li>
+<li><code>uri</code> (optional, string): This parameter is only required for Media Elements such as <code>PlayerEndpoint</code> or <code>RecorderEndpoint</code>. It is an URI used in the Media Element, i.e. the media to be played (for <code>PlayerEndpoint</code>) or the location of the recording (for <code>RecorderEndpoint</code>).</li>
+<li><code>properties</code> (optional, object): Array of additional objects (key/value).</li>
+</ul>
+</li>
+<li><code>sessionId</code> (optional, string). Session identifier. This parameter is not present in the first request (typically the media pipeline creation).</li>
 </ul>
 </li>
 </ul>
-<p>The following example shows a Request message requesting the creation of an object of the type <code>PlayerEndpoint</code> within the pipeline <code>6829986</code> and the parameter uri:<code>http://host/app/video.mp4</code> in the session <code>c93e5bf0-4fd0-4888-9411-765ff5d89b93</code>:</p>
+<p>The following example shows a request message requesting the creation of an object of the type <code>MediaPipeline</code>:</p>
 <ul>
 <li>Body (application/json)<pre><code>{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "method": "create",
-  "params": {
-    "type": "PlayerEndPoint",
-    "constructorParams": {
-      "pipeline": "6829986",
-      "uri": "http://host/app/video.mp4"
+    "id": 2,
+    "method": "create",
+    "params": {
+        "type": "MediaPipeline",
+        "constructorParams": {},
+        "properties": {}
     },
-    "sessionId": "c93e5bf0-4fd0-4888-9411-765ff5d89b93"
-  }
+    "jsonrpc": "2.0"
+}
+</code></pre>
+</li>
+</ul>
+<p>The following example shows a request message requesting the creation of an object of the type <code>WebRtcEndpoint</code> within an existing Media Pipeline:</p>
+<ul>
+<li>Body (application/json)<pre><code>{
+    "id": 3,
+    "method": "create",
+    "params": {
+        "type": "WebRtcEndpoint",
+        "constructorParams": {
+            "mediaPipeline": "6ba9067f-cdcf-4ea6-a6ee-d74519585acd_kurento.MediaPipeline"
+        },
+        "properties": {},
+        "sessionId": "bd4d6227-0463-4d52-b1c3-c71f0be68466"
+    },
+    "jsonrpc": "2.0"
 }
 </code></pre>
 </li>
 </ul>
 <h3>Response</h3>
-<p>The response message contains the id of the new object in the field value. This message <code>id</code> has to be used in other requests of the protocol (as we will describe later). As stated before, the <code>sessionId</code> is also returned in each response.</p>
+<p>The response message contains the identifier of the new object in the field value. This message <code>id</code> has to be used in other requests (as described later). As stated before, the <code>sessionId</code> is also returned in each response.</p>
 <p>A <code>create</code> response contains the following parameters:</p>
 <ul>
 <li><code>result</code> (required, object). Result of the create invocation:<ul>
@@ -753,15 +841,29 @@
 </ul>
 </li>
 </ul>
-<p>The following example shows a typical response to a create message:</p>
+<p>The following examples shows the responses to the previous request messages (respectively, the response to the <code>MediaPipeline</code> create message, and then the response to the to <code>WebRtcEndpoint</code> create message):</p>
 <ul>
-<li>Body (application/json)<pre><code>{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "value": "442352747",
-    "sessionId": "c93e5bf0-4fd0-4888-9411-765ff5d89b93"
-  }
+<li>
+<p>Body (application/json)</p>
+<pre><code>{
+    "id": 2,
+    "result": {
+        "value": "6ba9067f-cdcf-4ea6-a6ee-d74519585acd_kurento.MediaPipeline",
+        "sessionId": "bd4d6227-0463-4d52-b1c3-c71f0be68466"
+    },
+    "jsonrpc": "2.0"
+}
+</code></pre>
+</li>
+<li>
+<p>Body (application/json)</p>
+<pre><code>{
+    "id": 3,
+    "result": {
+        "value": "6ba9067f-cdcf-4ea6-a6ee-d74519585acd_kurento.MediaPipeline/087b7777-aab5-4787-816f-f0de19e5b1d9_kurento.WebRtcEndpoint",
+        "sessionId": "bd4d6227-0463-4d52-b1c3-c71f0be68466"
+    },
+    "jsonrpc": "2.0"
 }
 </code></pre>
 </li>
@@ -773,7 +875,7 @@
             <section id="resource_group_invoke" class="resourceGroup">
             <h2 id="h-resource_group_invoke">Invoke</h2>
         
-	<p>Invoke message requests the invocation of an operation in the specified object. The parameter object indicates the id of the object in which the operation will be invoked. The parameter operation carries the name of the operation to be executed. Finally, the parameter operationParams has the parameters needed to execute the operation. The object specified has to understand the</p>
+	<p>Invoke message requests the invocation of an operation in the specified object. The parameter object indicates the identifier of the object in which the operation will be invoked. The parameter operation carries the name of the operation to be executed. Finally, the parameter <code>operationParams</code> contains the parameters needed to execute the operation.</p>
 <h3>Request</h3>
 <p>An <code>invoke</code> request contains the following parameters:</p>
 <ul>
@@ -783,36 +885,40 @@
 <li>
 <p><code>params</code> (required, object)</p>
 <ul>
-<li><code>object</code> (required, number). Identifier of the source media element.<ul>
+<li><code>object</code> (required, number). Identifier of the source media element.</li>
 <li><code>operation</code> (required, string). Operation invoked. Allowed Values:<ul>
 <li><code>connect</code>. Connect two media elements.</li>
-<li><code>play</code>. Start the play of a media (PlayerEndPoint).</li>
-<li><code>record</code>. Start the record of a media (RecorderEndPoint).</li>
+<li><code>play</code>. Start the play of a media (<code>PlayerEndpoint</code>).</li>
+<li><code>record</code>. Start the record of a media (<code>RecorderEndpoint</code>).</li>
+<li><code>setOverlayedImage</code>. Set the image that is going to be overlaid on the detected faces in a media stream (<code>FaceOverlayFilter</code>).</li>
+<li><code>processOffer</code>. Process the offer in the SDP negotiation (<code>WebRtcEndpoint</code>).</li>
+<li><code>gatherCandidates</code>. Start the ICE candidates gathering to establish a WebRTC media session (<code>WebRtcEndpoint</code>).</li>
+<li><code>addIceCandidate</code>. Add ICE candidate (<code>WebRtcEndpoint</code>).</li>
 </ul>
 </li>
-</ul>
-</li>
-<li><code>operationParams</code> (optional, object). <ul>
+<li><code>operationParams</code> (optional, object).<ul>
 <li><code>sink</code> (required, number). Identifier of the sink media element.</li>
+<li><code>offer</code> (optional, string). SDP offer used in the WebRTC SDP negotiation (in <code>WebRtcEndpoint</code>).</li>
+</ul>
+</li>
 <li><code>sessionId</code> (required, string). Session identifier.</li>
 </ul>
 </li>
 </ul>
-</li>
-</ul>
-<p>The following example shows a Request message requesting the invocation of the operation connect on the object <code>442352747</code> with parameter sink <code>6829986</code>. The <code>sessionId</code> is also included as is mandatory for all requests in the session (except the first one):</p>
+<p>The following example shows a request message requesting the invocation of the operation connect on a <code>PlayerEndpoint</code> connected to a <code>WebRtcEndpoint</code>:</p>
 <ul>
 <li>Body (application/json)<pre><code>{
-  "jsonrpc": "2.0",
-  "id": 2,
-  "method": "invoke",
-  "params": {
-    "object": "442352747", "operation": "connect",
-    "operationParams": {
-      "sink": "6829986"
+    "id": 5,
+    "method": "invoke",
+    "params": {
+        "object": "6ba9067f-cdcf-4ea6-a6ee-d74519585acd_kurento.MediaPipeline/76dcb8d7-5655-445b-8cb7-cf5dc91643bc_kurento.PlayerEndpoint",
+        "operation": "connect",
+        "operationParams": {
+            "sink": "6ba9067f-cdcf-4ea6-a6ee-d74519585acd_kurento.MediaPipeline/087b7777-aab5-4787-816f-f0de19e5b1d9_kurento.WebRtcEndpoint"
+        },
+        "sessionId": "bd4d6227-0463-4d52-b1c3-c71f0be68466"
     },
-    "sessionId": "c93e5bf0-4fd0-4888-9411-765ff5d89b93"
-  }
+    "jsonrpc": "2.0"
 }
 </code></pre>
 </li>
@@ -823,17 +929,18 @@
 <ul>
 <li><code>result</code> (required, object)<ul>
 <li><code>sessionId</code> (required, string). Session identifier.</li>
+<li><code>value</code> (optional, object). Additional object which describes the result of the <code>Invoke</code> operation. For example, in a <code>WebRtcEndpoint</code> this field is the SDP response (WebRTC SDP negotiation).</li>
 </ul>
 </li>
 </ul>
-<p>The following example shows a typical response while invoking the operation connect (that doesn’t return anything):</p>
+<p>The following example shows a typical response while invoking the operation connect:</p>
 <ul>
 <li>Body (application/json)<pre><code>{
-  "jsonrpc": "2.0",
-  "result": {
-    "sessionId": "c93e5bf0-4fd0-4888-9411-765ff5d89b93"
-  },
-  "id": 2
+    "id": 5,
+    "result": {
+        "sessionId": "bd4d6227-0463-4d52-b1c3-c71f0be68466"
+    },
+    "jsonrpc": "2.0"
 }
 </code></pre>
 </li>
@@ -853,24 +960,22 @@
 <p><code>method</code> (required, string). Value is <code>release</code>.</p>
 </li>
 <li>
-<p><code>params</code> (required, object). </p>
+<p><code>params</code> (required, object).</p>
 <ul>
-<li><code>object</code> (required, number). Identifier of the media element to be released.<ul>
+<li><code>object</code> (required, number). Identifier of the media element or pipeline to be released.</li>
 <li><code>sessionId</code> (required, string). Session identifier.</li>
-</ul>
-</li>
 </ul>
 </li>
 <li>
 <p>Body (application/json)</p>
 <pre><code>{
-  "jsonrpc": "2.0",
-  "id": 3,
-  "method": "release",
-  "params": {
-    "object": "442352747",
-    "sessionId": "c93e5bf0-4fd0-4888-9411-765ff5d89b93"
-  }
+    "id": 36,
+    "method": "release",
+    "params": {
+        "object": "6ba9067f-cdcf-4ea6-a6ee-d74519585acd_kurento.MediaPipeline",
+        "sessionId": "bd4d6227-0463-4d52-b1c3-c71f0be68466"
+    },
+    "jsonrpc": "2.0"
 }
 </code></pre>
 </li>
@@ -883,14 +988,14 @@
 </ul>
 </li>
 </ul>
-<p>The response message only contains the <code>sessionID</code>. The following example shows the typical response of a release request:</p>
+<p>The response message only contains the <code>sessionId</code>. The following example shows the typical response of a release request:</p>
 <ul>
 <li>Body (application/json)<pre><code>{
-  "jsonrpc":"2.0",
-  "id":3,
-  "result": {
-    "sessionId":"c93e5bf0-4fd0-4888-9411-765ff5d89b93"
-  }
+    "id": 36,
+    "result": {
+        "sessionId": "bd4d6227-0463-4d52-b1c3-c71f0be68466"
+    },
+    "jsonrpc": "2.0"
 }
 </code></pre>
 </li>
@@ -904,49 +1009,47 @@
         
 	<p>Subscribe message requests the subscription to a certain kind of events in the specified object. The parameter object indicates the id of the object to subscribe for events. The parameter type specifies the type of the events. If a client is subscribed for a certain type of events in an object, each time an event is fired in this object, a request with method onEvent is sent from Kurento Media Server to the client. This kind of request is described few sections later.</p>
 <h3>Request</h3>
-<p>A <code>subscribe</code> reqest contains the following parameters:</p>
+<p>A <code>subscribe</code> request contains the following parameters:</p>
 <ul>
 <li>
 <p><code>method</code> (required, string). Value is <code>subscribe</code>.</p>
 </li>
 <li>
-<p><code>params</code> (required, object). Parameters for the invocation of the create message, containing these members:</p>
+<p><code>params</code> (required, object). Parameters for the invocation of the subscribe message, containing these members:</p>
 <ul>
-<li><code>constructorParams</code> (required, object). Additional parameters. As minimum, the identifier of the media pipeline should be included here.<ul>
-<li><code>type</code> (required, string). Media event to be subscribed. Allowed Values:<ul>
-<li><code>CodeFound Event</code>: raised by a ZBarFilter when a code is found in the data being streamed.</li>
+<li><code>type</code> (required, string). Media event to be subscribed. The allowed values are the following:<ul>
+<li><code>CodeFoundEvent</code>: raised by a <code>ZBarFilter</code> when a code is found in the data being streamed.</li>
 <li><code>ConnectionStateChanged</code>: Indicates that the state of the connection has changed.</li>
 <li><code>ElementConnected</code>: Indicates that an element has been connected to other.</li>
 <li><code>ElementDisconnected</code>: Indicates that an element has been disconnected.</li>
 <li><code>EndOfStream</code>: Event raised when the stream that the element sends out is finished.</li>
 <li><code>Error</code>: An error related to the MediaObject has occurred.</li>
 <li><code>MediaSessionStarted</code>: Event raised when a session starts. This event has no data.</li>
-<li><code>MediaSessionTerminated</code>: Event raised when a session is terminated. This event has no data.</li>
+<li><code>MediaSessionTerminated</code>: Event raised when a session is  terminated. This event has no data.</li>
 <li><code>MediaStateChanged</code>: Indicates that the state of the media has changed.</li>
-<li><code>ObjectCreated</code>: Indicates that an object has been created on the mediaserver.</li>
-<li><code>ObjectDestroyed</code>: Indicates that an object has been destroyed on the mediaserver.</li>
+<li><code>ObjectCreated</code>: Indicates that an object has been created on the media server.</li>
+<li><code>ObjectDestroyed</code>: Indicates that an object has been destroyed on the media server.</li>
 <li><code>OnIceCandidate</code>: Notify of a new gathered local candidate.</li>
 <li><code>OnIceComponentStateChanged</code>: Notify about the change of an ICE component state.</li>
 <li><code>OnIceGatheringDone</code>: Notify that all candidates have been gathered.</li>
 </ul>
 </li>
-</ul>
-</li>
+<li><code>object</code> (required, string). Media element identifier in which the event is subscribed.</li>
 <li><code>sessionId</code> (required, string). Session identifier.</li>
 </ul>
 </li>
 </ul>
-<p>The following example shows a request message requesting the subscription of the event type <code>EndOfStream</code> on the object <code>311861480</code>. The <code>sessionId</code> is also included:</p>
+<p>The following example shows a request message requesting the subscription of the event type <code>EndOfStream</code> on a <code>PlayerEndpoint</code> Media Element:</p>
 <ul>
 <li>Body (application/json)<pre><code>{
-  "jsonrpc":"2.0",
-  "id":4,
-  "method":"subscribe",
-  "params":{
-    "object":"311861480",
-    "type":"EndOfStream",
-    "sessionId":"c93e5bf0-4fd0-4888-9411-765ff5d89b93"
-  }
+    "id": 11,
+    "method": "subscribe",
+    "params": {
+        "type": "EndOfStream",
+        "object": "6ba9067f-cdcf-4ea6-a6ee-d74519585acd_kurento.MediaPipeline/76dcb8d7-5655-445b-8cb7-cf5dc91643bc_kurento.PlayerEndpoint",
+        "sessionId": "bd4d6227-0463-4d52-b1c3-c71f0be68466"
+    },
+    "jsonrpc": "2.0"
 }
 </code></pre>
 </li>
@@ -955,25 +1058,21 @@
 <p>The response message contains the subscription identifier. This value can be used later to remove this <code>subscription</code>.</p>
 <p>A <code>subscribe</code> response contains the following parameters:</p>
 <ul>
-<li>
-<p><code>result</code> (required, object). Result of the subscription invocation. This object contains the following members:</p>
-</li>
-<li>
-<p><code>value</code> (required, number). Identifier of the media event.</p>
-</li>
-<li>
-<p><code>sessionId</code> (required, string). Session identifier.</p>
+<li><code>result</code> (required, object). Result of the subscription invocation. This object contains the following members:<ul>
+<li><code>value</code> (required, number). Identifier of the media event.</li>
+<li><code>sessionId</code> (required, string). Session identifier.</li>
+</ul>
 </li>
 </ul>
-<p>The following example shows the response of subscription request. The <code>value</code> attribute contains the subscription id:</p>
+<p>The following example shows the response of subscription request. The <code>value</code> attribute contains the subscription identifier:</p>
 <ul>
 <li>Body (application/json)<pre><code>{
-  "jsonrpc":"2.0",
-  "id":4,
-  "result": {
-    "value":"353be312-b7f1-4768-9117-5c2f5a087429",
-    "sessionId":"c93e5bf0-4fd0-4888-9411-765ff5d89b93"
-  }
+    "id": 11,
+    "result": {
+        "value": "052061c1-0d87-4fbd-9cc9-66b57c3e1280",
+        "sessionId": "bd4d6227-0463-4d52-b1c3-c71f0be68466"
+    },
+    "jsonrpc": "2.0"
 }
 </code></pre>
 </li>
@@ -993,34 +1092,31 @@
 <p><code>method</code> (required, string). Value is <code>unsubscribe</code>.</p>
 </li>
 <li>
-<p><code>params</code> (required, object). </p>
+<p><code>params</code> (required, object).</p>
 <ul>
-<li><code>object</code> (required, string). Media element in which the subscription is placed.<ul>
+<li><code>object</code> (required, string). Media element in which the subscription is placed.</li>
 <li><code>subscription</code> (required, number). Subscription identifier.</li>
+<li><code>sessionId</code> (required, string). Session identifier.</li>
 </ul>
 </li>
 </ul>
-</li>
-<li>
-<p><code>sessionId</code> (required, string). Session identifier.</p>
-</li>
-</ul>
-<p>The following example shows a Request message requesting the cancellation of the <code>subscription</code> <code>353be312-b7f1-4768-9117-5c2f5a087429</code>:</p>
+<p>The following example shows a request message requesting the cancellation of the <code>subscription</code> <code>353be312-b7f1-4768-9117-5c2f5a087429</code>:</p>
 <ul>
 <li>Body (application/json)<pre><code>{
-  "jsonrpc":"2.0",
-  "id":5,
-  "method":"unsubscribe",
-  "params": {
-    "subscription":"353be312-b7f1-4768-9117-5c2f5a087429",
-    "sessionId":"c93e5bf0-4fd0-4888-9411-765ff5d89b93"
-  }
+    "id": 38,
+    "method": "unsubscribe",
+    "params": {
+        "subscription": "052061c1-0d87-4fbd-9cc9-66b57c3e1280",
+        "object": "6ba9067f-cdcf-4ea6-a6ee-d74519585acd_kurento.MediaPipeline/76dcb8d7-5655-445b-8cb7-cf5dc91643bc_kurento.PlayerEndpoint",
+        "sessionId": "bd4d6227-0463-4d52-b1c3-c71f0be68466"
+    },
+    "jsonrpc": "2.0"
 }
 </code></pre>
 </li>
 </ul>
 <h3>Response</h3>
-<p>The response message only contains the <code>sessionID</code>. The following example shows the typical response of an unsubscription request:</p>
+<p>The response message only contains the <code>sessionId</code>. The following example shows the typical response of an unsubscription request:</p>
 <p>An <code>unsubscribe</code> response contains the following parameters:</p>
 <ul>
 <li><code>result</code> (required, object)<ul>
@@ -1031,11 +1127,11 @@
 <p>For example:</p>
 <ul>
 <li>Body (application/json)<pre><code>{
-  "jsonrpc":"2.0",
-  "id":5,
-  "result": {
-    "sessionId":"c93e5bf0-4fd0-4888-9411-765ff5d89b93"
-  }
+    "id": 38,
+    "result": {
+        "sessionId": "bd4d6227-0463-4d52-b1c3-c71f0be68466"
+    },
+    "jsonrpc": "2.0"
 }
 </code></pre>
 </li>
@@ -1047,21 +1143,7 @@
             <section id="resource_group_onevent" class="resourceGroup">
             <h2 id="h-resource_group_onevent">OnEvent</h2>
         
-	<p>When a client is <code>subscribed</code> to a type of events in an object, the server sends an onEvent request each time an event of that type is fired in the object. This is possible because the Stream Oriented open API is implemented with websockets and there is a full duplex channel between client and server. The request that server send to client has all the information about the event:</p>
-<ul>
-<li>
-<p><code>data</code>: Information about this specific of this type of event.</p>
-</li>
-<li>
-<p><code>source</code>: the object source of the event.</p>
-</li>
-<li>
-<p><code>type</code>: The type of the event.</p>
-</li>
-<li>
-<p><code>subscription</code>: subscription id for which the event is fired.</p>
-</li>
-</ul>
+	<p>When a client is <code>subscribed</code> to a type of events in an object, the server sends an onEvent request each time an event of that type is fired in the object. This is possible because the Stream Oriented open API is implemented with WebSockets and there is a full duplex channel between client and server.</p>
 <h3>Request</h3>
 <p>An <code>OnEvent</code> request contains the following parameters:</p>
 <ul>
@@ -1073,41 +1155,41 @@
 <ul>
 <li><code>value</code> (required, object)<ul>
 <li><code>data</code> (required, object)<ul>
-<li><code>object</code> (optional, string). Media element target.</li>
-<li><code>source</code> (optional, string). Media element source.</li>
-<li><code>tags</code> (optional, string). Media element metadata.</li>
-<li><code>timestamp</code> (optional, number). Media server time and date.</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><code>object</code> (required, object).Media element identifier.</li>
+<li><code>source</code> (required, string). Source media element.</li>
+<li><code>tags</code> (optional, string array). Metadata for the media element.</li>
+<li><code>timestamp</code> (required, number). Media server time and date (in Unix time, i.e., number of seconds since 01/01/1970).</li>
 <li><code>type</code> (required, string). Same type identifier described on <code>subscribe</code> message (i.e.: <code>CodeFound</code>, <code>ConnectionStateChanged</code>, <code>ElementConnected</code>, <code>ElementDisconnected</code>, <code>EndOfStream</code>, <code>Error</code>, <code>MediaSessionStarted</code>, <code>MediaSessionTerminated</code>, <code>MediaStateChanged</code>, <code>ObjectCreated</code>, <code>ObjectDestroyed</code>, <code>OnIceCandidate</code>, <code>OnIceComponentStateChanged</code>, <code>OnIceGatheringDone</code>)</li>
 </ul>
 </li>
+<li><code>object</code> (required, object).Media element identifier.</li>
+<li><code>type</code> (required, string). Type identifier (same value than before)</li>
 </ul>
-<p>The following example shows a notification sent for server to client to notify an event of type <code>EndOfStream</code> in the object <code>311861480</code> with <code>subscription</code> <code>353be312-b7f1-4768-9117-5c2f5a087429</code>:</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>The following example shows a notification sent for server to client to notify an event of type <code>EndOfStream</code> in a <code>PlayerEndpoint</code> object:</p>
 <ul>
 <li>Body (application/json)<pre><code>{
-  "jsonrpc": "2.0",
-  "id": 6,
-  "method": "onEvent",
-  "params": {
-    "value": {
-       "data":{
-          "source":"311861480",
-          "type":"EndOfStream"
-      },
-      "object":"311861480",
-      "subscription":"353be312-b7f1-4768-9117-5c2f5a087429",
-      "type":"EndOfStream",
-    },
-    "sessionId":"4f5255d5-5695-4e1c-aa2b-722e82db5260"
-  }
+    "jsonrpc": "2.0",
+    "method": "onEvent",
+    "params": {
+        "value": {
+            "data": {
+                "source": "6ba9067f-cdcf-4ea6-a6ee-d74519585acd_kurento.MediaPipeline/76dcb8d7-5655-445b-8cb7-cf5dc91643bc_kurento.PlayerEndpoint",
+                "tags": [],
+                "timestamp": "1461589478",
+                "type": "EndOfStream"
+            },
+            "object": "6ba9067f-cdcf-4ea6-a6ee-d74519585acd_kurento.MediaPipeline/76dcb8d7-5655-445b-8cb7-cf5dc91643bc_kurento.PlayerEndpoint",
+            "type": "EndOfStream"
+        }
+    }
 }
 </code></pre>
 </li>
 </ul>
+<p>Notice that this message has no <code>id</code> field due to the fact that no response is required.</p>
 <h3>Response</h3>
 <p>There is no response to the <code>onEvent</code> message.</p>
         
